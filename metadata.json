@@ -1,0 +1,10 @@
+{
+  "name": "Remix ISP Flow",
+  "description": "Manage internet subscriptions, automate renewal reminders via WhatsApp, and track revenue seamlessly for your ISP business.",
+  "requestFramePermissions": [
+    "display-capture"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
