@@ -1,6 +1,6 @@
 {
-  "name": "Remix ISP Flow",
-  "description": "Manage internet subscriptions, automate renewal reminders via WhatsApp, and track revenue seamlessly for your ISP business.",
+  "name": "Aegis Game Translator",
+  "description": "Real-time PC game screen OCR translator with customizable HUD overlays, RPG term glossaries, dialogue backlog, and picture-in-picture mode.",
   "requestFramePermissions": [
     "display-capture"
   ],

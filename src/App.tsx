@@ -126,9 +126,23 @@ export const App: React.FC = () => {
   };
 
   const handleClearHistory = () => {
-    if (confirm('Clear all recorded dialogue lines from history?')) {
-      setDialogueHistory([]);
-    }
+    setDialogueHistory([]);
+  };
+
+  const handleQuickAddGlossaryTerm = (source: string, target: string) => {
+    if (!selectedProfile) return;
+    const newEntry = {
+      id: 'g_' + Date.now(),
+      source: source.trim(),
+      target: target.trim(),
+      category: 'term' as const,
+      note: 'Saved from dialogue backlog',
+    };
+    const updated = {
+      ...selectedProfile,
+      glossary: [newEntry, ...selectedProfile.glossary],
+    };
+    handleUpdateProfile(updated);
   };
 
   const handleUpdateProfile = (updated: GameProfile) => {
@@ -180,6 +194,7 @@ export const App: React.FC = () => {
             onToggleBookmark={handleToggleBookmark}
             onClearHistory={handleClearHistory}
             onDeleteRecord={handleDeleteRecord}
+            onAddGlossaryTerm={handleQuickAddGlossaryTerm}
           />
         )}
 

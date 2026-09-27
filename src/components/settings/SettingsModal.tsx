@@ -1,7 +1,7 @@
 import React from 'react';
 import { SUPPORTED_LANGUAGES, SOURCE_LANGUAGES } from '../../data/languages';
 import { OverlayConfig } from '../../types';
-import { Settings2, X, Cpu, Eye, Zap, Keyboard, Check, RefreshCw } from 'lucide-react';
+import { Settings2, X, Cpu, Eye, Zap, Keyboard, Check, RefreshCw, Download } from 'lucide-react';
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -171,6 +171,27 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
                 </button>
               ))}
             </div>
+          </div>
+
+          {/* Project Source Code ZIP Download */}
+          <div className="bg-slate-950 border border-slate-800 rounded-xl p-4 space-y-2 text-xs">
+            <div className="flex items-center justify-between">
+              <div className="font-semibold text-slate-200 flex items-center gap-2">
+                <Download className="w-4 h-4 text-cyan-400" />
+                <span>Project Source Code Archive</span>
+              </div>
+              <a
+                href="/api/download-zip"
+                download="aegis-game-translator.zip"
+                className="px-3 py-1.5 rounded-lg bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold text-xs flex items-center gap-1.5 transition-colors cursor-pointer shadow-md shadow-cyan-500/20"
+              >
+                <Download className="w-3.5 h-3.5" />
+                <span>Download ZIP</span>
+              </a>
+            </div>
+            <p className="text-[11px] text-slate-400">
+              Download the entire source code, gaming assets, server scripts, and OCR configuration as a standalone ZIP.
+            </p>
           </div>
 
           {/* Gamer Hotkeys Guide */}

@@ -89,4 +89,66 @@ export const INITIAL_GAME_SCENES: GameScene[] = [
       },
     ],
   },
+  {
+    id: 'scene_anime',
+    title: 'Astral Chronicle: Skyward Shrine',
+    genre: 'visual_novel',
+    image: jrpgImg,
+    defaultProfileId: 'anime_jrpg',
+    questObjective: 'Commission: Speak to the shrine maiden before twilight shadows engulf the sacred peach tree.',
+    dialogues: [
+      {
+        speaker: 'パイモン (Paimon)',
+        text: 'おい旅人！日没前に古代の寺院を見つけてください！お腹がすいちゃうよ！',
+        lang: 'ja',
+        contextHint: 'Playful fairy companion whining about dinner.',
+      },
+      {
+        speaker: '八重神子 (Guuji Yae)',
+        text: '神櫻の木の下でお待ちしております。運命の輪はすでに回り始めましたよ。',
+        lang: 'ja',
+        contextHint: 'Mysterious fox shrine maiden teasing with prophecy.',
+      },
+      {
+        speaker: '钟离 (Zhongli)',
+        text: '契约已定。在夕阳落入群山前，必须将古老神庙的祭品归位。',
+        lang: 'zh',
+        contextHint: 'Solemn gentleman discussing the Geo contract.',
+      },
+      {
+        speaker: 'Traveler',
+        text: 'The Ancient Temple should be just across the valley. Let us make haste before the wind dies down.',
+        lang: 'en',
+        contextHint: 'Protagonist planning the path.',
+      },
+    ],
+  },
+  {
+    id: 'scene_scifi',
+    title: 'Starfall Vanguard: Orbital Deck',
+    genre: 'action',
+    image: cyberpunkImg,
+    defaultProfileId: 'cyberpunk_neon',
+    questObjective: 'Main Directive: Override reactor seals before the solar flare disrupts station shields.',
+    dialogues: [
+      {
+        speaker: 'Commander Vane',
+        text: 'All units, find the ancient temple before sunset. The artifact must not fall into syndicate hands.',
+        lang: 'en',
+        contextHint: 'Fleet commander broadcasting emergency orders.',
+      },
+      {
+        speaker: 'ИИ "Аврора" (AI Aurora)',
+        text: 'Внимание. Критический сбой охлаждения гипердвигателя через 4 минуты. Действуйте немедленно.',
+        lang: 'ru',
+        contextHint: 'Emergency shipboard AI warning.',
+      },
+      {
+        speaker: 'Tactical Officer',
+        text: 'Alert: Hostile interceptors detected entering the upper atmosphere. Weapons systems armed.',
+        lang: 'en',
+        contextHint: 'Bridge combat update.',
+      },
+    ],
+  },
 ];

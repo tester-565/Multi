@@ -1,7 +1,7 @@
 import React from 'react';
 import { SUPPORTED_LANGUAGES } from '../../data/languages';
 import { GameProfile, Language } from '../../types';
-import { MonitorPlay, Sparkles, Settings2, BookOpen, Volume2, VolumeX, History } from 'lucide-react';
+import { MonitorPlay, Sparkles, Settings2, BookOpen, Volume2, VolumeX, History, Download } from 'lucide-react';
 import { ttsService } from '../../utils/ttsService';
 
 interface HeaderProps {
@@ -163,6 +163,17 @@ export const Header: React.FC<HeaderProps> = ({
             <span className={`w-2 h-2 rounded-full ${isAutoScanning ? 'bg-slate-950 animate-ping' : 'bg-slate-500'}`} />
             <span>{isAutoScanning ? 'Live Scanning...' : 'Start Scan'}</span>
           </button>
+
+          {/* Download Project ZIP */}
+          <a
+            href="/api/download-zip"
+            download="aegis-game-translator.zip"
+            title="Download full project copy as ZIP"
+            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 text-xs font-medium transition-colors"
+          >
+            <Download className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">ZIP</span>
+          </a>
 
           {/* Settings Modal Button */}
           <button

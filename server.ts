@@ -2,6 +2,7 @@ import express from 'express';
 import dotenv from 'dotenv';
 import { GoogleGenAI, Type } from '@google/genai';
 import path from 'path';
+import fs from 'fs';
 import { fileURLToPath } from 'url';
 
 dotenv.config();
@@ -28,9 +29,42 @@ if (apiKey) {
   });
 }
 
+// Safe JSON parser to handle markdown fencing if present
+function safeJsonParse(raw: string | undefined): any {
+  if (!raw) return {};
+  let cleaned = raw.trim();
+  if (cleaned.startsWith('```json')) {
+    cleaned = cleaned.replace(/^```json\s*/, '').replace(/\s*```$/, '');
+  } else if (cleaned.startsWith('```')) {
+    cleaned = cleaned.replace(/^```\s*/, '').replace(/\s*```$/, '');
+  }
+  try {
+    return JSON.parse(cleaned);
+  } catch (e) {
+    console.warn('JSON parse fallback on raw text:', cleaned);
+    return {};
+  }
+}
+
 // Health check
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', hasGeminiKey: !!apiKey });
+});
+
+// Download full project as ZIP file
+app.get('/api/download-zip', (req, res) => {
+  const zipPath = path.resolve(__dirname, 'public', 'aegis-game-translator.zip');
+  const rootZipPath = path.resolve(__dirname, 'aegis-game-translator.zip');
+
+  const fileToSend = fs.existsSync(zipPath) ? zipPath : fs.existsSync(rootZipPath) ? rootZipPath : null;
+
+  if (fileToSend) {
+    res.setHeader('Content-Type', 'application/zip');
+    res.setHeader('Content-Disposition', 'attachment; filename="aegis-game-translator.zip"');
+    return res.sendFile(fileToSend);
+  }
+
+  return res.status(404).json({ error: 'ZIP file archive is being prepared. Please retry in a few seconds.' });
 });
 
 // Translation API endpoint
@@ -123,7 +157,7 @@ CRITICAL RULES:
       },
     });
 
-    const parsed = JSON.parse(response.text || '{}');
+    const parsed = safeJsonParse(response.text);
     return res.json({
       success: true,
       originalText: text,
@@ -240,7 +274,7 @@ ${charPrompt}
       },
     });
 
-    const parsed = JSON.parse(response.text || '{}');
+    const parsed = safeJsonParse(response.text);
     return res.json({
       success: true,
       originalText: parsed.ocrExtractedText || '',
@@ -254,6 +288,88 @@ ${charPrompt}
     console.error('Gemini OCR translate error:', error);
     return res.status(500).json({
       error: error?.message || 'Failed to OCR and translate game image',
+    });
+  }
+});
+
+// AI Game Glossary & Profile Generator Endpoint
+app.post('/api/generate-glossary', async (req, res) => {
+  try {
+    const { gameName, genre = 'rpg', targetLang = 'ar', targetLangName = 'Arabic' } = req.body;
+
+    if (!gameName || typeof gameName !== 'string') {
+      return res.status(400).json({ error: 'Game title is required.' });
+    }
+
+    if (!ai) {
+      return res.status(503).json({
+        error: 'Gemini API key is not configured on the server.',
+      });
+    }
+
+    const response = await ai.models.generateContent({
+      model: 'gemini-3.8-flash',
+      contents: `Generate a specialized video game localization glossary for "${gameName}" (${genre}) translated into ${targetLangName} (Language code: ${targetLang}).
+Include key gaming mechanics, lore terms, character titles, in-game currencies, and quest jargon that require authentic, natural translation for players in ${targetLangName}.`,
+      config: {
+        systemInstruction: `You are a professional video game localization director.
+Produce 6 to 10 curated glossary entries, plus 4 main characters and 3 iconic locations for the specified game.
+Rules:
+1. Translate terminology naturally for gamers in ${targetLangName} (e.g. into authentic gaming terminology, avoiding clumsy machine translation).
+2. For each term, state whether it is 'term', 'character', 'location', 'item', or 'quest'.
+3. Output strictly valid JSON matching the schema.`,
+        temperature: 0.3,
+        responseMimeType: 'application/json',
+        responseSchema: {
+          type: Type.OBJECT,
+          properties: {
+            suggestedTone: {
+              type: Type.STRING,
+              description: 'One of: fantasy, sci-fi, dramatic, concise, or colloquial',
+            },
+            glossary: {
+              type: Type.ARRAY,
+              items: {
+                type: Type.OBJECT,
+                properties: {
+                  source: { type: Type.STRING },
+                  target: { type: Type.STRING },
+                  category: {
+                    type: Type.STRING,
+                    description: 'term, character, location, item, or quest',
+                  },
+                  note: { type: Type.STRING },
+                },
+                required: ['source', 'target', 'category', 'note'],
+              },
+            },
+            characters: {
+              type: Type.ARRAY,
+              items: { type: Type.STRING },
+            },
+            locations: {
+              type: Type.ARRAY,
+              items: { type: Type.STRING },
+            },
+          },
+          required: ['glossary', 'characters', 'locations'],
+        },
+      },
+    });
+
+    const parsed = safeJsonParse(response.text);
+    return res.json({
+      success: true,
+      suggestedTone: parsed.suggestedTone || 'fantasy',
+      glossary: parsed.glossary || [],
+      characters: parsed.characters || [],
+      locations: parsed.locations || [],
+    });
+  } catch (err: unknown) {
+    const error = err as Error;
+    console.error('Glossary generation error:', error);
+    return res.status(500).json({
+      error: error?.message || 'Failed to generate game glossary',
     });
   }
 });

@@ -25,7 +25,7 @@ class PiPHelper {
     }
 
     if (!document.pictureInPictureEnabled) {
-      alert('Picture-in-Picture is not supported in this browser.');
+      console.warn('Picture-in-Picture is not supported in this browser.');
       return false;
     }
 
